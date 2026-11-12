@@ -1,0 +1,218 @@
+diff --git a/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java b/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java
+index f837be0..8f2d9dd 100644
+--- a/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java
++++ b/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java
+@@ -1,6 +1,5 @@
+ package com.universidad.refactoringu11.inventario;
+ 
+-import com.universidad.refactoringu11.reportes.ReporteBajoStockService; // inventario ahora importa reportes
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Service;
+ import java.util.ArrayList;
+@@ -12,11 +11,11 @@ public class InventarioService {
+     private final List<Producto> productos = new ArrayList<>();
+     private final List<String> movimientos = new ArrayList<>();
+ 
+-    private ReporteBajoStockService reporteBajoStockService; // colaborador opcional, sin final
++    private NotificadorBajoStock notificador; // depende de la abstraccion, no de ReporteBajoStockService
+ 
+     @Autowired(required = false)
+-    public void setReporteBajoStockService(ReporteBajoStockService reporteBajoStockService) {
+-        this.reporteBajoStockService = reporteBajoStockService;
++    public void setNotificador(NotificadorBajoStock notificador) {
++        this.notificador = notificador;
+     }
+ 
+     public void agregarProducto(Producto producto) {
+@@ -88,8 +87,8 @@ public class InventarioService {
+     }
+ 
+     private void alertarBajoStock(Producto producto, int cantidadReorden) {
+-        if (reporteBajoStockService != null) {
+-            System.out.println(reporteBajoStockService.generarReporte());
++        if (notificador != null) {
++            notificador.notificar(producto, cantidadReorden);
+         }
+         System.out.println("ALERTA: " + producto.getNombre()
+                 + " bajo stock minimo. Reordenar " + cantidadReorden + " unidades.");
+diff --git a/src/main/java/com/universidad/refactoringu11/inventario/NotificadorBajoStock.java b/src/main/java/com/universidad/refactoringu11/inventario/NotificadorBajoStock.java
+new file mode 100644
+index 0000000..f772e1b
+--- /dev/null
++++ b/src/main/java/com/universidad/refactoringu11/inventario/NotificadorBajoStock.java
+@@ -0,0 +1,11 @@
++package com.universidad.refactoringu11.inventario;
++
++/**
++ * Abstraccion con la que el inventario avisa que un producto quedo por debajo de su stock
++ * minimo. Vive en el paquete inventario para que el dominio no dependa de quien la implementa.
++ */
++public interface NotificadorBajoStock {
++
++    /** Se invoca una vez por cada movimiento que deja al producto bajo su stock minimo. */
++    void notificar(Producto producto, int cantidadReorden);
++}
+diff --git a/src/main/java/com/universidad/refactoringu11/reportes/ReporteBajoStockService.java b/src/main/java/com/universidad/refactoringu11/reportes/ReporteBajoStockService.java
+index a5582a6..50dcc31 100644
+--- a/src/main/java/com/universidad/refactoringu11/reportes/ReporteBajoStockService.java
++++ b/src/main/java/com/universidad/refactoringu11/reportes/ReporteBajoStockService.java
+@@ -1,22 +1,31 @@
+ package com.universidad.refactoringu11.reportes;
+ 
+ import com.universidad.refactoringu11.inventario.InventarioService;
++import com.universidad.refactoringu11.inventario.NotificadorBajoStock;
+ import com.universidad.refactoringu11.inventario.Producto;
+ import org.springframework.context.annotation.Lazy;
+ import org.springframework.stereotype.Service;
++import java.util.HashMap;
+ import java.util.List;
++import java.util.Map;
+ import java.util.stream.Collectors;
+ 
+ @Service
+-public class ReporteBajoStockService {
++public class ReporteBajoStockService implements NotificadorBajoStock {
+ 
+     private final InventarioService inventarioService;
++    private final Map<Long, Integer> reordenesNotificadas = new HashMap<>();
+ 
+     // @Lazy: InventarioService tambien depende de este servicio, y sin el proxy Spring no puede crear ninguno de los dos
+     public ReporteBajoStockService(@Lazy InventarioService inventarioService) {
+         this.inventarioService = inventarioService;
+     }
+ 
++    @Override
++    public void notificar(Producto producto, int cantidadReorden) {
++        reordenesNotificadas.put(producto.getId(), cantidadReorden);
++    }
++
+     public String generarReporte() {
+         List<Producto> bajoStock = inventarioService.productosBajoStockMinimo();
+         if (bajoStock.isEmpty()) {
+@@ -29,7 +38,9 @@ public class ReporteBajoStockService {
+     }
+ 
+     private String describir(Producto producto) {
+-        return "- " + producto.getNombre() + ": stock " + producto.getStock()
++        String linea = "- " + producto.getNombre() + ": stock " + producto.getStock()
+                 + " de minimo " + producto.getStockMinimo();
++        Integer cantidadReorden = reordenesNotificadas.get(producto.getId());
++        return cantidadReorden == null ? linea : linea + ", reordenar " + cantidadReorden + " unidades";
+     }
+ }
+diff --git a/src/test/java/com/universidad/refactoringu11/NotificacionBajoStockIntegracionTest.java b/src/test/java/com/universidad/refactoringu11/NotificacionBajoStockIntegracionTest.java
+new file mode 100644
+index 0000000..0df8587
+--- /dev/null
++++ b/src/test/java/com/universidad/refactoringu11/NotificacionBajoStockIntegracionTest.java
+@@ -0,0 +1,30 @@
++package com.universidad.refactoringu11;
++
++import com.universidad.refactoringu11.inventario.InventarioService;
++import com.universidad.refactoringu11.inventario.Producto;
++import com.universidad.refactoringu11.inventario.TipoProducto;
++import com.universidad.refactoringu11.reportes.ReporteBajoStockService;
++import org.junit.jupiter.api.Test;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.boot.test.context.SpringBootTest;
++import static org.junit.jupiter.api.Assertions.*;
++
++// Con el contexto real de Spring: comprueba que el setter conecta ReporteBajoStockService como notificador
++@SpringBootTest
++class NotificacionBajoStockIntegracionTest {
++
++    @Autowired
++    private InventarioService inventarioService;
++
++    @Autowired
++    private ReporteBajoStockService reporteBajoStockService;
++
++    @Test
++    void salidaBajoElMinimo_quedaEnElReporteConSuCantidadDeReorden() {
++        inventarioService.agregarProducto(new Producto(10L, "Monitor", TipoProducto.ELECTRONICO, 300.0, 8, 4));
++
++        assertEquals("OK_BAJO_STOCK_REORDEN_10", inventarioService.actualizarInventario(10L, 6, "SALIDA"));
++        assertEquals("Productos bajo stock minimo:" + System.lineSeparator()
++                + "- Monitor: stock 2 de minimo 4, reordenar 10 unidades", reporteBajoStockService.generarReporte());
++    }
++}
+diff --git a/src/test/java/com/universidad/refactoringu11/inventario/InventarioServiceNotificacionTest.java b/src/test/java/com/universidad/refactoringu11/inventario/InventarioServiceNotificacionTest.java
+new file mode 100644
+index 0000000..7b82c26
+--- /dev/null
++++ b/src/test/java/com/universidad/refactoringu11/inventario/InventarioServiceNotificacionTest.java
+@@ -0,0 +1,47 @@
++package com.universidad.refactoringu11.inventario;
++
++import org.junit.jupiter.api.BeforeEach;
++import org.junit.jupiter.api.Test;
++import java.util.ArrayList;
++import java.util.List;
++import static org.junit.jupiter.api.Assertions.*;
++
++class InventarioServiceNotificacionTest {
++
++    // Spy escrito a mano: NotificadorBajoStock tiene un solo metodo, asi que basta una lambda que anote cada llamada
++    private final List<Producto> productosNotificados = new ArrayList<>();
++    private final List<Integer> cantidadesNotificadas = new ArrayList<>();
++
++    private InventarioService service;
++    private Producto libro;
++
++    @BeforeEach
++    void setUp() {
++        service = new InventarioService();
++        libro = new Producto(1L, "Clean Code", TipoProducto.LIBRO, 45.0, 20, 5);
++        service.agregarProducto(libro);
++        service.setNotificador((producto, cantidadReorden) -> {
++            productosNotificados.add(producto);
++            cantidadesNotificadas.add(cantidadReorden);
++        });
++    }
++
++    @Test
++    void actualizarInventario_salidaBajoElMinimo_notificaUnaVezConLaCantidadDeReorden() {
++        assertEquals("OK_BAJO_STOCK_REORDEN_12", service.actualizarInventario(1L, 17, "SALIDA"));
++        assertEquals(List.of(libro), productosNotificados);
++        assertEquals(List.of(12), cantidadesNotificadas);
++    }
++
++    @Test
++    void actualizarInventario_movimientoSinReorden_noNotifica() {
++        assertEquals("OK_30", service.actualizarInventario(1L, 10, "ENTRADA"));
++        assertTrue(productosNotificados.isEmpty());
++    }
++
++    @Test
++    void actualizarInventario_movimientoRechazado_noNotifica() {
++        assertEquals("ERROR_STOCK_INSUFICIENTE", service.actualizarInventario(1L, 50, "SALIDA"));
++        assertTrue(productosNotificados.isEmpty());
++    }
++}
+diff --git a/src/test/java/com/universidad/refactoringu11/reportes/ReporteBajoStockServiceTest.java b/src/test/java/com/universidad/refactoringu11/reportes/ReporteBajoStockServiceTest.java
+index 3a43a05..d1921fc 100644
+--- a/src/test/java/com/universidad/refactoringu11/reportes/ReporteBajoStockServiceTest.java
++++ b/src/test/java/com/universidad/refactoringu11/reportes/ReporteBajoStockServiceTest.java
+@@ -41,4 +41,22 @@ class ReporteBajoStockServiceTest {
+                 + "- Clean Code: stock 3 de minimo 5" + SALTO
+                 + "- Cafe: stock 2 de minimo 4", reporte.generarReporte());
+     }
++
++    @Test
++    void generarReporte_conReordenNotificada_incluyeLaCantidadAReordenar() {
++        inventario.setNotificador(reporte);
++        inventario.actualizarInventario(1L, 17, "SALIDA");
++        assertEquals("Productos bajo stock minimo:" + SALTO
++                + "- Clean Code: stock 3 de minimo 5, reordenar 12 unidades" + SALTO
++                + "- Cafe: stock 2 de minimo 4", reporte.generarReporte());
++    }
++
++    @Test
++    void generarReporte_productoRepuestoDespuesDeLaAlerta_dejaDeAparecer() {
++        inventario.setNotificador(reporte);
++        inventario.actualizarInventario(1L, 17, "SALIDA");
++        inventario.actualizarInventario(1L, 10, "ENTRADA");
++        assertEquals("Productos bajo stock minimo:" + SALTO
++                + "- Cafe: stock 2 de minimo 4", reporte.generarReporte());
++    }
+ }
