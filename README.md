@@ -2,11 +2,12 @@
 
 Post-contenido de la unidad 11 de Patrones de Diseño de Software (UDES). Nicolás Andrés Sánchez Villamizar.
 
-Un servicio de inventario en Spring Boot con dos code smells reales. Primero los blindé con pruebas de caracterización y después los refactoricé sin tocar esas pruebas.  Todos los números de este README salen de ejecuciones reales en GitHub Actions: los registros completos están en [`docs/evidencias`](docs/evidencias) y las capturas en [`docs/capturas`](docs/capturas).
+Un servicio de inventario en Spring Boot con dos code smells reales. Primero los blindé con pruebas de caracterización y después los refactoricé sin tocar esas pruebas. En la Parte 2 le agregué un módulo de reportes que crea una dependencia cíclica entre paquetes, la detecté con una prueba de arquitectura y la resolví invirtiendo la dependencia. Todos los números de este README salen de ejecuciones reales en GitHub Actions: los registros completos están en [`docs/evidencias`](docs/evidencias) y las capturas en [`docs/capturas`](docs/capturas).
 
 ## Contenido
 
 1. [Parte 1: red de seguridad y refactorización](#parte-1-red-de-seguridad-y-refactorización)
+2. [Parte 2: acoplamiento entre paquetes](#parte-2-acoplamiento-entre-paquetes)
 6. [Inconsistencias del enunciado y cómo las resolví](#inconsistencias-del-enunciado-y-cómo-las-resolví)
 8. [Estructura, ejecución y herramientas](#estructura-ejecución-y-herramientas)
 
@@ -145,6 +146,43 @@ El costo que acepto es el que plantea la guía: las constantes de un `enum` no p
 
 Que las pruebas no se tocaron se puede comprobar con `git diff 8cd3f38 a98712b -- src/test`, que no devuelve nada.
 
+## Parte 2: acoplamiento entre paquetes
+
+### Paso 1: el módulo de reportes y el ciclo que introduce
+
+En el commit [`2385f89`](https://github.com/NicolasSnchz/sanchez-post1-u11-patrones/commit/2385f89b96e8674fa1daf2bc4d71370b5b134bb1) agregué el paquete `reportes` y conecté `InventarioService` con `ReporteBajoStockService` por setter, como pide la guía. La guía deja `generarReporte()` sin implementar; yo lo implementé leyendo los productos bajo el mínimo que expone `InventarioService` con un método nuevo, [`productosBajoStockMinimo()`](https://github.com/NicolasSnchz/sanchez-post1-u11-patrones/blob/2385f89b96e8674fa1daf2bc4d71370b5b134bb1/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java#L26). La alerta ya no vive dentro de `actualizarInventario()`, porque en la Parte 1 quedó en [`alertarBajoStock()`](https://github.com/NicolasSnchz/sanchez-post1-u11-patrones/blob/2385f89b96e8674fa1daf2bc4d71370b5b134bb1/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java#L90), así que la llamada al reporte va ahí.
+
+Todas las pruebas siguieron en verde (34), como dice la guía. El problema no lo ve ninguna prueba de negocio: los dos paquetes se importan mutuamente.
+
+```mermaid
+flowchart LR
+    subgraph inventario
+        IS[InventarioService]
+    end
+    subgraph reportes
+        RS[ReporteBajoStockService]
+    end
+    IS -- "importa ReporteBajoStockService<br/>setter y generarReporte()" --> RS
+    RS -- "importa InventarioService y Producto<br/>constructor y productosBajoStockMinimo()" --> IS
+    linkStyle 0 stroke:#d73a49,stroke-width:2px
+    linkStyle 1 stroke:#d73a49,stroke-width:2px
+```
+
+### Paso 2: diagnóstico con una prueba de arquitectura
+
+[`ArquitecturaPaquetesTest`](https://github.com/NicolasSnchz/sanchez-post1-u11-patrones/blob/main/src/test/java/com/universidad/refactoringu11/ArquitecturaPaquetesTest.java), agregada en este commit, tiene la regla de la guía y una segunda que agregué:
+
+- [`losPaquetesNoDebenTenerDependenciasCiclicas`](https://github.com/NicolasSnchz/sanchez-post1-u11-patrones/blob/main/src/test/java/com/universidad/refactoringu11/ArquitecturaPaquetesTest.java#L13): la de la guía, sin cambios.
+- [`inventarioNoDebeDependerDeReportes`](https://github.com/NicolasSnchz/sanchez-post1-u11-patrones/blob/main/src/test/java/com/universidad/refactoringu11/ArquitecturaPaquetesTest.java#L23): fija la *dirección*. Sin ella, la prueba de ciclos también pasaría si alguien "arreglara" el ciclo al revés, haciendo que `reportes` deje de usar `inventario` mientras el dominio sigue importando el módulo de reportes. Además es literalmente lo que exige la rúbrica: que `inventario` no importe nada de `reportes`.
+
+Las dos fallan, y ArchUnit dice exactamente por qué: `Cycle detected: Slice inventario -> Slice reportes -> Slice inventario`, con cada campo, parámetro y llamada que forma el ciclo.
+
+![ArchUnit en rojo con el ciclo](docs/capturas/p2-arquitectura-rojo.png)
+
+En la misma ejecución, las 34 pruebas restantes pasan, incluidas todas las de la Parte 1. El código compila, el comportamiento es correcto y aun así el diseño está mal: un code smell no es un bug.
+
+![La suite con el ciclo: solo falla la prueba de arquitectura](docs/capturas/p2-suite-con-ciclo.png)
+
 ## Inconsistencias del enunciado y cómo las resolví
 
 | Qué dice el enunciado | El problema | Cómo lo resolví |
@@ -160,16 +198,19 @@ Que las pruebas no se tocaron se puede comprobar con `git diff 8cd3f38 a98712b -
 ```text
 src/main/java/com/universidad/refactoringu11/
 ├── RefactoringU11Application.java
-├── inventario/      Producto, TipoProducto, InventarioService, ClasificadorProducto, EtiquetadoProductosrc/test/java/com/universidad/refactoringu11/
-├── RefactoringU11ApplicationTests.java├── inventario/      pruebas de caracterizacióndocs/capturas        capturas de las ejecuciones reales
+├── inventario/      Producto, TipoProducto, InventarioService, ClasificadorProducto, EtiquetadoProducto└── reportes/        ReporteBajoStockService
+src/test/java/com/universidad/refactoringu11/
+├── RefactoringU11ApplicationTests.java, ArquitecturaPaquetesTest.java├── inventario/      pruebas de caracterización└── reportes/        pruebas del reporte
+docs/capturas        capturas de las ejecuciones reales
 docs/evidencias      registros completos, reportes de JaCoCo y de CPD
 ```
 
 ```bash
 mvn test                                    # toda la suite
+mvn test -Dtest=ArquitecturaPaquetesTest    # solo la prueba de arquitectura
 mvn verify                                  # pruebas y reporte de JaCoCo en target/site/jacoco
 mvn spring-boot:run                         # arranca la aplicación (no expone web: arranca y termina)
 ```
 
-**Herramientas:** Java 17 (probado también con JDK 23), Spring Boot 4.1.1, Maven, JUnit 5, JaCoCo 0.8.13, PMD CPD, GitHub Actions, Git y GitHub.
+**Herramientas:** Java 17 (probado también con JDK 23), Spring Boot 4.1.1, Maven, JUnit 5, ArchUnit 1.3.0, JaCoCo 0.8.13, PMD CPD, GitHub Actions, Git y GitHub.
 
