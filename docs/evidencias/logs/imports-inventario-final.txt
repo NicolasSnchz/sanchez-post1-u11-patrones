@@ -1,0 +1,4 @@
+src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java:3:import org.springframework.beans.factory.annotation.Autowired;
+src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java:4:import org.springframework.stereotype.Service;
+src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java:5:import java.util.ArrayList;
+src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java:6:import java.util.List;
