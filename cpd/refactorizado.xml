@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd xmlns="https://pmd-code.org/schema/cpd-report"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         pmdVersion="7.7.0"
+         timestamp="2026-11-12T15:06:56.963692588Z"
+         version="1.0.0"
+         xsi:schemaLocation="https://pmd-code.org/schema/cpd-report https://pmd.github.io/schema/cpd-report_1_0_0.xsd">
+   <file path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/RefactoringU11Application.java"
+         totalNumberOfTokens="29"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/ClasificadorProducto.java"
+         totalNumberOfTokens="29"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/EtiquetadoProducto.java"
+         totalNumberOfTokens="29"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java"
+         totalNumberOfTokens="459"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/Producto.java"
+         totalNumberOfTokens="149"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/TipoProducto.java"
+         totalNumberOfTokens="153"/>
+   <duplication lines="4" tokens="23">
+      <file begintoken="36"
+            column="19"
+            endcolumn="2"
+            endline="8"
+            endtoken="58"
+            line="5"
+            path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/ClasificadorProducto.java"/>
+      <file begintoken="66"
+            column="19"
+            endcolumn="2"
+            endline="8"
+            endtoken="88"
+            line="5"
+            path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/EtiquetadoProducto.java"/>
+      <codefragment><![CDATA[    public double calcularRecargoEnvio(Producto producto) {
+        return producto.getTipo().calcularRecargoEnvio(producto.getPrecio());
+    }
+}
+]]></codefragment>
+   </duplication>
+   <duplication lines="7" tokens="22">
+      <file begintoken="722"
+            column="20"
+            endcolumn="19"
+            endline="19"
+            endtoken="743"
+            line="13"
+            path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/TipoProducto.java"/>
+      <file begintoken="770"
+            column="29"
+            endcolumn="19"
+            endline="31"
+            endtoken="791"
+            line="25"
+            path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/TipoProducto.java"/>
+      <codefragment><![CDATA[            return 0.0;
+        }
+    },
+    ELECTRONICO("ELECTRO", "Garantia 1 ano") {
+        @Override
+        public double calcularRecargoEnvio(double precio) {
+            return precio * 0.08;
+]]></codefragment>
+   </duplication>
+   <duplication lines="6" tokens="21">
+      <file begintoken="704"
+            column="5"
+            endcolumn="6"
+            endline="15"
+            endtoken="724"
+            line="10"
+            path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/TipoProducto.java"/>
+      <file begintoken="774"
+            column="5"
+            endcolumn="6"
+            endline="33"
+            endtoken="794"
+            line="28"
+            path="/tmp/tmp.d5KM5T00Fh/C4/src/main/java/com/universidad/refactoringu11/inventario/TipoProducto.java"/>
+      <codefragment><![CDATA[    LIBRO("LIBRO", "Exento de IVA") {
+        @Override
+        public double calcularRecargoEnvio(double precio) {
+            return 0.0;
+        }
+    },
+]]></codefragment>
+   </duplication>
+</pmd-cpd>

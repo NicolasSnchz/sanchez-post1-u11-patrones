@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd xmlns="https://pmd-code.org/schema/cpd-report"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         pmdVersion="7.7.0"
+         timestamp="2026-11-12T15:06:53.48377049Z"
+         version="1.0.0"
+         xsi:schemaLocation="https://pmd-code.org/schema/cpd-report https://pmd.github.io/schema/cpd-report_1_0_0.xsd">
+   <file path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/RefactoringU11Application.java"
+         totalNumberOfTokens="29"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/inventario/ClasificadorProducto.java"
+         totalNumberOfTokens="70"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/inventario/EtiquetadoProducto.java"
+         totalNumberOfTokens="90"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/inventario/InventarioService.java"
+         totalNumberOfTokens="281"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/inventario/Producto.java"
+         totalNumberOfTokens="149"/>
+   <file path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/inventario/TipoProducto.java"
+         totalNumberOfTokens="12"/>
+   <duplication lines="2" tokens="26">
+      <file begintoken="122"
+            column="13"
+            endcolumn="95"
+            endline="9"
+            endtoken="147"
+            line="8"
+            path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/inventario/EtiquetadoProducto.java"/>
+      <file begintoken="148"
+            column="13"
+            endcolumn="92"
+            endline="11"
+            endtoken="173"
+            line="10"
+            path="/tmp/tmp.d5KM5T00Fh/C2/src/main/java/com/universidad/refactoringu11/inventario/EtiquetadoProducto.java"/>
+      <codefragment><![CDATA[            case LIBRO:       return "[LIBRO] " + producto.getNombre() + " - Exento de IVA";
+            case ELECTRONICO: return "[ELECTRO] " + producto.getNombre() + " - Garantia 1 ano";
+]]></codefragment>
+   </duplication>
+</pmd-cpd>

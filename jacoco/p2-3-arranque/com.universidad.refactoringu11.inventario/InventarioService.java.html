@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventarioService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">refactoring-u11</a> &gt; <a href="index.source.html" class="el_package">com.universidad.refactoringu11.inventario</a> &gt; <span class="el_source">InventarioService.java</span></div><h1>InventarioService.java</h1><pre class="source lang-java linenums">package com.universidad.refactoringu11.inventario;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+<span class="fc" id="L9">public class InventarioService {</span>
+
+<span class="fc" id="L11">    private final List&lt;Producto&gt; productos = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L12">    private final List&lt;String&gt; movimientos = new ArrayList&lt;&gt;();</span>
+
+    private NotificadorBajoStock notificador; // depende de la abstraccion, no de ReporteBajoStockService
+
+    @Autowired(required = false)
+    public void setNotificador(NotificadorBajoStock notificador) {
+<span class="fc" id="L18">        this.notificador = notificador;</span>
+<span class="fc" id="L19">    }</span>
+
+    public void agregarProducto(Producto producto) {
+<span class="fc" id="L22">        productos.add(producto);</span>
+<span class="fc" id="L23">    }</span>
+
+    public List&lt;Producto&gt; productosBajoStockMinimo() {
+<span class="fc" id="L26">        return productos.stream().filter(this::necesitaReorden).toList();</span>
+    }
+
+    public String actualizarInventario(Long productoId, int cantidad, String tipoMovimiento) {
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (!esSolicitudValida(productoId, cantidad, tipoMovimiento)) return &quot;ERROR_DATOS_INVALIDOS&quot;;</span>
+<span class="fc" id="L31">        Producto producto = buscarProducto(productoId);</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (producto == null) return &quot;ERROR_PRODUCTO_NO_EXISTE&quot;;</span>
+<span class="fc" id="L33">        int nuevoStock = calcularNuevoStock(producto.getStock(), cantidad, tipoMovimiento);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (esSalidaSinStock(tipoMovimiento, nuevoStock)) return &quot;ERROR_STOCK_INSUFICIENTE&quot;;</span>
+<span class="fc" id="L35">        producto.setStock(nuevoStock);</span>
+<span class="fc" id="L36">        registrarMovimiento(tipoMovimiento, cantidad, producto);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        return necesitaReorden(producto) ? solicitarReorden(producto) : &quot;OK_&quot; + nuevoStock;</span>
+    }
+
+    private boolean esSolicitudValida(Long productoId, int cantidad, String tipoMovimiento) {
+<span class="fc bfc" id="L41" title="All 4 branches covered.">        return productoId != null &amp;&amp; cantidad != 0</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">                &amp;&amp; (esEntrada(tipoMovimiento) || esSalida(tipoMovimiento));</span>
+    }
+
+    private boolean esEntrada(String tipoMovimiento) {
+<span class="fc" id="L46">        return tipoMovimiento.equals(&quot;ENTRADA&quot;);</span>
+    }
+
+    private boolean esSalida(String tipoMovimiento) {
+<span class="fc" id="L50">        return tipoMovimiento.equals(&quot;SALIDA&quot;);</span>
+    }
+
+    private Producto buscarProducto(Long productoId) {
+<span class="fc" id="L54">        return productos.stream()</span>
+<span class="fc" id="L55">                .filter(p -&gt; p.getId().equals(productoId))</span>
+<span class="fc" id="L56">                .findFirst()</span>
+<span class="fc" id="L57">                .orElse(null);</span>
+    }
+
+    private int calcularNuevoStock(int stockActual, int cantidad, String tipoMovimiento) {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        return esEntrada(tipoMovimiento) ? stockActual + cantidad : stockActual - cantidad;</span>
+    }
+
+    private boolean esSalidaSinStock(String tipoMovimiento, int nuevoStock) {
+<span class="fc bfc" id="L65" title="All 4 branches covered.">        return esSalida(tipoMovimiento) &amp;&amp; nuevoStock &lt; 0;</span>
+    }
+
+    private void registrarMovimiento(String tipoMovimiento, int cantidad, Producto producto) {
+<span class="fc" id="L69">        String registro = tipoMovimiento + &quot; de &quot; + cantidad + &quot; unidades de &quot;</span>
+<span class="fc" id="L70">                + producto.getNombre() + &quot; -&gt; stock final: &quot; + producto.getStock();</span>
+<span class="fc" id="L71">        movimientos.add(registro);</span>
+<span class="fc" id="L72">        System.out.println(registro);</span>
+<span class="fc" id="L73">    }</span>
+
+    private boolean necesitaReorden(Producto producto) {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        return producto.getStock() &lt; producto.getStockMinimo();</span>
+    }
+
+    private String solicitarReorden(Producto producto) {
+<span class="fc" id="L80">        int cantidadReorden = calcularCantidadReorden(producto);</span>
+<span class="fc" id="L81">        alertarBajoStock(producto, cantidadReorden);</span>
+<span class="fc" id="L82">        return &quot;OK_BAJO_STOCK_REORDEN_&quot; + cantidadReorden;</span>
+    }
+
+    private int calcularCantidadReorden(Producto producto) {
+<span class="fc" id="L86">        return producto.getStockMinimo() * 3 - producto.getStock();</span>
+    }
+
+    private void alertarBajoStock(Producto producto, int cantidadReorden) {
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (notificador != null) {</span>
+<span class="fc" id="L91">            notificador.notificar(producto, cantidadReorden);</span>
+        }
+<span class="fc" id="L93">        System.out.println(&quot;ALERTA: &quot; + producto.getNombre()</span>
+                + &quot; bajo stock minimo. Reordenar &quot; + cantidadReorden + &quot; unidades.&quot;);
+<span class="fc" id="L95">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

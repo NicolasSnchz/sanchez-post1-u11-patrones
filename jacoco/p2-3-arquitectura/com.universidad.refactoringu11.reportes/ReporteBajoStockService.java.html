@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReporteBajoStockService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">refactoring-u11</a> &gt; <a href="index.source.html" class="el_package">com.universidad.refactoringu11.reportes</a> &gt; <span class="el_source">ReporteBajoStockService.java</span></div><h1>ReporteBajoStockService.java</h1><pre class="source lang-java linenums">package com.universidad.refactoringu11.reportes;
+
+import com.universidad.refactoringu11.inventario.InventarioService;
+import com.universidad.refactoringu11.inventario.NotificadorBajoStock;
+import com.universidad.refactoringu11.inventario.Producto;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+public class ReporteBajoStockService implements NotificadorBajoStock {
+
+    private final InventarioService inventarioService;
+<span class="nc" id="L17">    private final Map&lt;Long, Integer&gt; reordenesNotificadas = new HashMap&lt;&gt;();</span>
+
+    // @Lazy: InventarioService tambien depende de este servicio, y sin el proxy Spring no puede crear ninguno de los dos
+<span class="nc" id="L20">    public ReporteBajoStockService(@Lazy InventarioService inventarioService) {</span>
+<span class="nc" id="L21">        this.inventarioService = inventarioService;</span>
+<span class="nc" id="L22">    }</span>
+
+    @Override
+    public void notificar(Producto producto, int cantidadReorden) {
+<span class="nc" id="L26">        reordenesNotificadas.put(producto.getId(), cantidadReorden);</span>
+<span class="nc" id="L27">    }</span>
+
+    public String generarReporte() {
+<span class="nc" id="L30">        List&lt;Producto&gt; bajoStock = inventarioService.productosBajoStockMinimo();</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        if (bajoStock.isEmpty()) {</span>
+<span class="nc" id="L32">            return &quot;Sin productos bajo stock minimo&quot;;</span>
+        }
+<span class="nc" id="L34">        return bajoStock.stream()</span>
+<span class="nc" id="L35">                .map(this::describir)</span>
+<span class="nc" id="L36">                .collect(Collectors.joining(System.lineSeparator(),</span>
+<span class="nc" id="L37">                        &quot;Productos bajo stock minimo:&quot; + System.lineSeparator(), &quot;&quot;));</span>
+    }
+
+    private String describir(Producto producto) {
+<span class="nc" id="L41">        String linea = &quot;- &quot; + producto.getNombre() + &quot;: stock &quot; + producto.getStock()</span>
+<span class="nc" id="L42">                + &quot; de minimo &quot; + producto.getStockMinimo();</span>
+<span class="nc" id="L43">        Integer cantidadReorden = reordenesNotificadas.get(producto.getId());</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        return cantidadReorden == null ? linea : linea + &quot;, reordenar &quot; + cantidadReorden + &quot; unidades&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

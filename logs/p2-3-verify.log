@@ -1,0 +1,118 @@
+[INFO] Scanning for projects...
+[INFO] Loaded 24463 auto-discovered prefixes for remote repository central (prefixes-central.txt)
+[INFO] 
+[INFO] ------------------< com.universidad:refactoring-u11 >-------------------
+[INFO] Building refactoring-u11 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco:0.8.13:prepare-agent (preparar-agente) @ refactoring-u11 ---
+[INFO] Loaded 64 auto-discovered prefixes for remote repository apache.snapshots (prefixes-apache.snapshots.txt)
+[INFO] argLine set to -javaagent:/home/runner/.m2/repository/org/jacoco/org.jacoco.agent/0.8.13/org.jacoco.agent-0.8.13-runtime.jar=destfile=/tmp/tmp.d5KM5T00Fh/parte2/target/jacoco.exec
+[INFO] 
+[INFO] --- resources:3.5.0:resources (default-resources) @ refactoring-u11 ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.15.0:compile (default-compile) @ refactoring-u11 ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.5.0:testResources (default-testResources) @ refactoring-u11 ---
+[INFO] skip non existing resourceDirectory /tmp/tmp.d5KM5T00Fh/parte2/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.15.0:testCompile (default-testCompile) @ refactoring-u11 ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.6:test (default-test) @ refactoring-u11 ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.universidad.refactoringu11.inventario.EtiquetadoProductoTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.106 s -- in com.universidad.refactoringu11.inventario.EtiquetadoProductoTest
+[INFO] Running com.universidad.refactoringu11.inventario.InventarioServiceTest
+ENTRADA de -25 unidades de Clean Code -> stock final: -5
+ALERTA: Clean Code bajo stock minimo. Reordenar 20 unidades.
+SALIDA de 17 unidades de Clean Code -> stock final: 3
+ALERTA: Clean Code bajo stock minimo. Reordenar 12 unidades.
+ENTRADA de 10 unidades de Clean Code -> stock final: 30
+SALIDA de 20 unidades de Clean Code -> stock final: 0
+ALERTA: Clean Code bajo stock minimo. Reordenar 15 unidades.
+ENTRADA de 10 unidades de Clean Code -> stock final: 30
+SALIDA de 15 unidades de Clean Code -> stock final: 5
+SALIDA de -5 unidades de Clean Code -> stock final: 25
+ENTRADA de 2 unidades de Teclado -> stock final: 3
+ALERTA: Teclado bajo stock minimo. Reordenar 12 unidades.
+SALIDA de 8 unidades de Clean Code -> stock final: 12
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.075 s -- in com.universidad.refactoringu11.inventario.InventarioServiceTest
+[INFO] Running com.universidad.refactoringu11.inventario.InventarioServiceNotificacionTest
+ENTRADA de 10 unidades de Clean Code -> stock final: 30
+SALIDA de 17 unidades de Clean Code -> stock final: 3
+ALERTA: Clean Code bajo stock minimo. Reordenar 12 unidades.
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in com.universidad.refactoringu11.inventario.InventarioServiceNotificacionTest
+[INFO] Running com.universidad.refactoringu11.inventario.ClasificadorProductoTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.universidad.refactoringu11.inventario.ClasificadorProductoTest
+[INFO] Running com.universidad.refactoringu11.RefactoringU11ApplicationTests
+15:07:44.867 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.universidad.refactoringu11.RefactoringU11ApplicationTests]: RefactoringU11ApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+15:07:44.975 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.universidad.refactoringu11.RefactoringU11Application for test class com.universidad.refactoringu11.RefactoringU11ApplicationTests
+15:07:45.077 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.universidad.refactoringu11.RefactoringU11ApplicationTests]: RefactoringU11ApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+15:07:45.079 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.universidad.refactoringu11.RefactoringU11Application for test class com.universidad.refactoringu11.RefactoringU11ApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-11-12T15:07:45.406Z  INFO 4040 --- [refactoring-u11] [           main] c.u.r.RefactoringU11ApplicationTests     : Starting RefactoringU11ApplicationTests using Java 17.0.21 with PID 4040 (started by runner in /tmp/tmp.d5KM5T00Fh/parte2)
+2026-11-12T15:07:45.408Z  INFO 4040 --- [refactoring-u11] [           main] c.u.r.RefactoringU11ApplicationTests     : No active profile set, falling back to 1 default profile: "default"
+2026-11-12T15:07:45.959Z  INFO 4040 --- [refactoring-u11] [           main] c.u.r.RefactoringU11ApplicationTests     : Started RefactoringU11ApplicationTests in 0.841 seconds (process running for 2.597)
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.927 s -- in com.universidad.refactoringu11.RefactoringU11ApplicationTests
+[INFO] Running com.universidad.refactoringu11.reportes.ReporteBajoStockServiceTest
+SALIDA de 17 unidades de Clean Code -> stock final: 3
+ALERTA: Clean Code bajo stock minimo. Reordenar 12 unidades.
+SALIDA de 17 unidades de Clean Code -> stock final: 3
+ALERTA: Clean Code bajo stock minimo. Reordenar 12 unidades.
+ENTRADA de 10 unidades de Clean Code -> stock final: 13
+SALIDA de 17 unidades de Clean Code -> stock final: 3
+ALERTA: Clean Code bajo stock minimo. Reordenar 12 unidades.
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in com.universidad.refactoringu11.reportes.ReporteBajoStockServiceTest
+[INFO] Running com.universidad.refactoringu11.ArquitecturaPaquetesTest
+2026-11-12T15:07:46.602Z  INFO 4040 --- [refactoring-u11] [           main] com.tngtech.archunit.core.PluginLoader   : Detected Java version 17.0.21
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.654 s -- in com.universidad.refactoringu11.ArquitecturaPaquetesTest
+[INFO] Running com.universidad.refactoringu11.NotificacionBajoStockIntegracionTest
+2026-11-12T15:07:48.251Z  INFO 4040 --- [refactoring-u11] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.universidad.refactoringu11.NotificacionBajoStockIntegracionTest]: NotificacionBajoStockIntegracionTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-12T15:07:48.256Z  INFO 4040 --- [refactoring-u11] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.universidad.refactoringu11.RefactoringU11Application for test class com.universidad.refactoringu11.NotificacionBajoStockIntegracionTest
+2026-11-12T15:07:48.257Z  INFO 4040 --- [refactoring-u11] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.universidad.refactoringu11.NotificacionBajoStockIntegracionTest]: NotificacionBajoStockIntegracionTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-12T15:07:48.260Z  INFO 4040 --- [refactoring-u11] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.universidad.refactoringu11.RefactoringU11Application for test class com.universidad.refactoringu11.NotificacionBajoStockIntegracionTest
+SALIDA de 6 unidades de Monitor -> stock final: 2
+ALERTA: Monitor bajo stock minimo. Reordenar 10 unidades.
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in com.universidad.refactoringu11.NotificacionBajoStockIntegracionTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jacoco:0.8.13:report (reporte) @ refactoring-u11 ---
+[INFO] Loading execution data file /tmp/tmp.d5KM5T00Fh/parte2/target/jacoco.exec
+[INFO] Analyzed bundle 'refactoring-u11' with 11 classes
+[INFO] 
+[INFO] --- jar:3.5.1:jar (default-jar) @ refactoring-u11 ---
+[INFO] Building jar: /tmp/tmp.d5KM5T00Fh/parte2/target/refactoring-u11-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:4.1.1:repackage (repackage) @ refactoring-u11 ---
+[INFO] Loaded 50 auto-discovered prefixes for remote repository ow2-snapshot (prefixes-ow2-snapshot.txt)
+[INFO] Replacing main artifact /tmp/tmp.d5KM5T00Fh/parte2/target/refactoring-u11-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /tmp/tmp.d5KM5T00Fh/parte2/target/refactoring-u11-0.0.1-SNAPSHOT.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.254 s
+[INFO] Finished at: 2026-11-12T15:07:49Z
+[INFO] ------------------------------------------------------------------------

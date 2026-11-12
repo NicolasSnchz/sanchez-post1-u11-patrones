@@ -1,0 +1,3 @@
+src/main/java/com/universidad/refactoringu11/inventario/EtiquetadoProducto.java:5:    // Mismo switch sobre TipoProducto que ClasificadorProducto — duplicacion estructural
+src/main/java/com/universidad/refactoringu11/inventario/EtiquetadoProducto.java:7:        switch (producto.getTipo()) {
+src/main/java/com/universidad/refactoringu11/inventario/ClasificadorProducto.java:7:        switch (producto.getTipo()) {

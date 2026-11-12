@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TipoProducto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">refactoring-u11</a> &gt; <a href="index.source.html" class="el_package">com.universidad.refactoringu11.inventario</a> &gt; <span class="el_source">TipoProducto.java</span></div><h1>TipoProducto.java</h1><pre class="source lang-java linenums">package com.universidad.refactoringu11.inventario;
+
+/**
+ * Tipos de producto del inventario. Cada tipo sabe calcular su recargo de envio y armar su
+ * etiqueta, asi que agregar un tipo nuevo solo exige declararlo aqui: el compilador obliga a
+ * definir su recargo y los datos de su etiqueta.
+ */
+<span class="fc" id="L8">public enum TipoProducto {</span>
+
+<span class="fc" id="L10">    LIBRO(&quot;LIBRO&quot;, &quot;Exento de IVA&quot;) {</span>
+        @Override
+        public double calcularRecargoEnvio(double precio) {
+<span class="fc" id="L13">            return 0.0;</span>
+        }
+    },
+<span class="fc" id="L16">    ELECTRONICO(&quot;ELECTRO&quot;, &quot;Garantia 1 ano&quot;) {</span>
+        @Override
+        public double calcularRecargoEnvio(double precio) {
+<span class="fc" id="L19">            return precio * 0.08;</span>
+        }
+    },
+<span class="fc" id="L22">    ROPA(&quot;ROPA&quot;, &quot;Ver talla&quot;) {</span>
+        @Override
+        public double calcularRecargoEnvio(double precio) {
+<span class="fc" id="L25">            return precio * 0.03;</span>
+        }
+    },
+<span class="fc" id="L28">    ALIMENTO(&quot;ALIMENTO&quot;, &quot;Perecedero&quot;) {</span>
+        @Override
+        public double calcularRecargoEnvio(double precio) {
+<span class="fc" id="L31">            return 2.50;</span>
+        }
+    };
+
+    private final String prefijoEtiqueta;
+    private final String leyendaEtiqueta;
+
+<span class="fc" id="L38">    TipoProducto(String prefijoEtiqueta, String leyendaEtiqueta) {</span>
+<span class="fc" id="L39">        this.prefijoEtiqueta = prefijoEtiqueta;</span>
+<span class="fc" id="L40">        this.leyendaEtiqueta = leyendaEtiqueta;</span>
+<span class="fc" id="L41">    }</span>
+
+    /** Recargo de envio que este tipo agrega al precio del producto. */
+    public abstract double calcularRecargoEnvio(double precio);
+
+    /** Etiqueta con el formato comun a todos los tipos: [PREFIJO] nombre - leyenda. */
+    public String generarEtiqueta(String nombreProducto) {
+<span class="fc" id="L48">        return &quot;[&quot; + prefijoEtiqueta + &quot;] &quot; + nombreProducto + &quot; - &quot; + leyendaEtiqueta;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

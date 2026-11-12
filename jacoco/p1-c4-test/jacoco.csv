@@ -1,0 +1,11 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+refactoring-u11,com.universidad.refactoringu11,RefactoringU11Application,5,3,0,0,2,1,1,1,1,1
+refactoring-u11,com.universidad.refactoringu11.inventario,EtiquetadoProducto,0,9,0,0,0,2,0,2,0,2
+refactoring-u11,com.universidad.refactoringu11.inventario,ClasificadorProducto,0,9,0,0,0,2,0,2,0,2
+refactoring-u11,com.universidad.refactoringu11.inventario,InventarioService,0,182,0,24,0,35,0,27,0,15
+refactoring-u11,com.universidad.refactoringu11.inventario,TipoProducto.new TipoProducto() {...},0,9,0,0,0,2,0,2,0,2
+refactoring-u11,com.universidad.refactoringu11.inventario,TipoProducto.new TipoProducto() {...},0,11,0,0,0,2,0,2,0,2
+refactoring-u11,com.universidad.refactoringu11.inventario,TipoProducto.new TipoProducto() {...},0,11,0,0,0,2,0,2,0,2
+refactoring-u11,com.universidad.refactoringu11.inventario,TipoProducto.new TipoProducto() {...},0,9,0,0,0,2,0,2,0,2
+refactoring-u11,com.universidad.refactoringu11.inventario,TipoProducto,0,53,0,0,0,10,0,3,0,3
+refactoring-u11,com.universidad.refactoringu11.inventario,Producto,0,43,0,0,0,15,0,8,0,8

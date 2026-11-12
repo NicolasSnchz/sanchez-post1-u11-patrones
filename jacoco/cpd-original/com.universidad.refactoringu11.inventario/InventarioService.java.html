@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventarioService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">refactoring-u11</a> &gt; <a href="index.source.html" class="el_package">com.universidad.refactoringu11.inventario</a> &gt; <span class="el_source">InventarioService.java</span></div><h1>InventarioService.java</h1><pre class="source lang-java linenums">package com.universidad.refactoringu11.inventario;
+
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+<span class="fc" id="L8">public class InventarioService {</span>
+
+<span class="fc" id="L10">    private final List&lt;Producto&gt; productos = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L11">    private final List&lt;String&gt; movimientos = new ArrayList&lt;&gt;();</span>
+
+    public void agregarProducto(Producto producto) {
+<span class="fc" id="L14">        productos.add(producto);</span>
+<span class="fc" id="L15">    }</span>
+
+    // Long Method: valida, busca, actualiza stock, calcula reorden
+    // y registra/alerta, todo en un solo metodo (Bloater)
+    public String actualizarInventario(Long productoId, int cantidad, String tipoMovimiento) {
+
+        // Validacion de entrada (deberia ser responsabilidad propia)
+<span class="fc bfc" id="L22" title="All 4 branches covered.">        if (productoId == null || cantidad == 0</span>
+<span class="fc bfc" id="L23" title="All 4 branches covered.">                || (!tipoMovimiento.equals(&quot;ENTRADA&quot;) &amp;&amp; !tipoMovimiento.equals(&quot;SALIDA&quot;))) {</span>
+<span class="fc" id="L24">            return &quot;ERROR_DATOS_INVALIDOS&quot;;</span>
+        }
+
+        // Busqueda del producto (mezclada con la logica de negocio)
+<span class="fc" id="L28">        Producto producto = null;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        for (Producto p : productos) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">            if (p.getId().equals(productoId)) { producto = p; break; }</span>
+<span class="fc" id="L31">        }</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (producto == null) return &quot;ERROR_PRODUCTO_NO_EXISTE&quot;;</span>
+
+        // Actualizacion de stock
+        int nuevoStock;
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (tipoMovimiento.equals(&quot;ENTRADA&quot;)) {</span>
+<span class="fc" id="L37">            nuevoStock = producto.getStock() + cantidad;</span>
+        } else {
+<span class="fc" id="L39">            nuevoStock = producto.getStock() - cantidad;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">            if (nuevoStock &lt; 0) return &quot;ERROR_STOCK_INSUFICIENTE&quot;;</span>
+        }
+<span class="fc" id="L42">        producto.setStock(nuevoStock);</span>
+
+        // Calculo de cantidad de reorden (otra responsabilidad distinta)
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        boolean necesitaReorden = nuevoStock &lt; producto.getStockMinimo();</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        int cantidadReorden = necesitaReorden</span>
+<span class="fc" id="L47">                ? (producto.getStockMinimo() * 3) - nuevoStock : 0;</span>
+
+        // Registro del movimiento (responsabilidad de auditoria)
+<span class="fc" id="L50">        String registro = tipoMovimiento + &quot; de &quot; + cantidad + &quot; unidades de &quot;</span>
+<span class="fc" id="L51">                + producto.getNombre() + &quot; -&gt; stock final: &quot; + nuevoStock;</span>
+<span class="fc" id="L52">        movimientos.add(registro);</span>
+<span class="fc" id="L53">        System.out.println(registro);</span>
+
+        // Decision de alerta (responsabilidad de notificacion)
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (necesitaReorden) {</span>
+<span class="fc" id="L57">            System.out.println(&quot;ALERTA: &quot; + producto.getNombre()</span>
+                    + &quot; bajo stock minimo. Reordenar &quot; + cantidadReorden + &quot; unidades.&quot;);
+<span class="fc" id="L59">            return &quot;OK_BAJO_STOCK_REORDEN_&quot; + cantidadReorden;</span>
+        }
+<span class="fc" id="L61">        return &quot;OK_&quot; + nuevoStock;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
