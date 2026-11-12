@@ -41,4 +41,22 @@ class ReporteBajoStockServiceTest {
                 + "- Clean Code: stock 3 de minimo 5" + SALTO
                 + "- Cafe: stock 2 de minimo 4", reporte.generarReporte());
     }
+
+    @Test
+    void generarReporte_conReordenNotificada_incluyeLaCantidadAReordenar() {
+        inventario.setNotificador(reporte);
+        inventario.actualizarInventario(1L, 17, "SALIDA");
+        assertEquals("Productos bajo stock minimo:" + SALTO
+                + "- Clean Code: stock 3 de minimo 5, reordenar 12 unidades" + SALTO
+                + "- Cafe: stock 2 de minimo 4", reporte.generarReporte());
+    }
+
+    @Test
+    void generarReporte_productoRepuestoDespuesDeLaAlerta_dejaDeAparecer() {
+        inventario.setNotificador(reporte);
+        inventario.actualizarInventario(1L, 17, "SALIDA");
+        inventario.actualizarInventario(1L, 10, "ENTRADA");
+        assertEquals("Productos bajo stock minimo:" + SALTO
+                + "- Cafe: stock 2 de minimo 4", reporte.generarReporte());
+    }
 }
