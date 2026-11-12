@@ -40,6 +40,15 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- Mockito se adjunta como agente al cargar el contexto de Spring en las pruebas, y la JVM
+                 lo avisa con advertencias. Se habilita de forma explicita y se apaga CDS para no ensuciar la salida -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>@{argLine} -XX:+EnableDynamicAgentLoading -Xshare:off</argLine>
+                </configuration>
+            </plugin>
             <!-- JaCoCo mide la cobertura y la complejidad por metodo que el README usa como evidencia -->
             <plugin>
                 <groupId>org.jacoco</groupId>
